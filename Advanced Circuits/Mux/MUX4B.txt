@@ -1,0 +1,28 @@
+Inputs: in1[4], in2[4], sel;
+Outputs: out[4];
+
+Parts:  // 13 NANDs
+  muxnot11 NOT,
+  mux1nand11 NAND, mux2nand12 NAND, mux3nand13 NAND, mux4nand14 NAND,
+  mux1nand21 NAND, mux2nand22 NAND, mux3nand23 NAND, mux4nand24 NAND,
+  mux1nand31 NAND, mux2nand32 NAND, mux3nand33 NAND, mux4nand34 NAND;
+
+Wires:
+  sel->muxnot11.in,
+  in2[1]->mux1nand11.in1, sel->mux1nand11.in2,
+  in2[2]->mux2nand12.in1, sel->mux2nand12.in2,
+  in2[3]->mux3nand13.in1, sel->mux3nand13.in2,
+  in2[4]->mux4nand14.in1, sel->mux4nand14.in2,
+
+  in1[1]->mux1nand21.in1, muxnot11.out->mux1nand21.in2,
+  in1[2]->mux2nand22.in1, muxnot11.out->mux2nand22.in2,
+  in1[3]->mux3nand23.in1, muxnot11.out->mux3nand23.in2,
+  in1[4]->mux4nand24.in1, muxnot11.out->mux4nand24.in2,
+
+  mux1nand11.out->mux1nand31.in1, mux1nand21.out->mux1nand31.in2,
+  mux2nand12.out->mux2nand32.in1, mux2nand22.out->mux2nand32.in2,
+  mux3nand13.out->mux3nand33.in1, mux3nand23.out->mux3nand33.in2,
+  mux4nand14.out->mux4nand34.in1, mux4nand24.out->mux4nand34.in2,
+
+  mux1nand31.out->out[1], mux2nand32.out->out[2],
+  mux3nand33.out->out[3], mux4nand34.out->out[4];

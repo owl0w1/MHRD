@@ -1,0 +1,19 @@
+Inputs: in[4];
+Outputs: out;
+// out = in[1] v in[2] v in[3] v in[4]
+//     = (in[1] v in[2]) v (in[3] v in[4])
+
+Parts:  // 9 NANDs
+  or11 OR, or12 OR,
+  or21 OR;
+
+Wires:
+  in[1] -> or11.in1,
+  in[2] -> or11.in2,
+  in[3] -> or12.in1,
+  in[4] -> or12.in2,
+
+  or11.out -> or21.in1,
+  or12.out -> or21.in2,
+
+  or21.out -> out;

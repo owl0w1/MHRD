@@ -1,0 +1,14 @@
+Inputs: in;
+Outputs: out;
+// out = ~in
+//     = ~(in ^ in)
+//     = in NAND in
+
+Parts:  // 1 NAND
+  nand NAND;
+
+Wires:
+  in -> nand.in1,
+  in -> nand.in2,
+
+  nand.out -> out;

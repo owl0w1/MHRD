@@ -1,0 +1,39 @@
+Inputs: in[4], load, reset;
+Outputs: out[4];
+// dffi.in = ~reset ^ ((inci.out ^ ~load) v (in[i] ^ load))
+//         = (inci.out NAND (~reset ^ ~load)) NAND (in[i] NAND (~reset ^ load))
+
+Parts:  // 52 NANDs
+  dff1 DFF, dff2 DFF, dff3 DFF, dff4 DFF,
+  inc1 NOT, inc2 HALFADDER, inc3 HALFADDER, inc4 XOR,
+  selnot11 NOT,
+  seldemux21 DEMUX,
+  sel1nand41 NAND, sel1nand42 NAND,
+  sel2nand43 NAND, sel2nand44 NAND,
+  sel3nand45 NAND, sel3nand46 NAND,
+  sel4nand47 NAND, sel4nand48 NAND,
+  sel1nand51 NAND, sel2nand52 NAND, sel3nand53 NAND, sel4nand54 NAND;
+
+Wires:
+  dff1.out->inc1.in,
+  dff2.out->inc2.in1, dff1.out->inc2.in2,
+  dff3.out->inc3.in1, inc2.carry->inc3.in2,
+  dff4.out->inc4.in1, inc3.carry->inc4.in2,
+
+  reset->selnot11.in, selnot11.out->seldemux21.in, load->seldemux21.sel,
+  inc1.out->sel1nand41.in1, seldemux21.out1->sel1nand41.in2,
+  inc2.out->sel2nand43.in1, seldemux21.out1->sel2nand43.in2,
+  inc3.out->sel3nand45.in1, seldemux21.out1->sel3nand45.in2,
+  inc4.out->sel4nand47.in1, seldemux21.out1->sel4nand47.in2,
+  in[1]->sel1nand42.in1, seldemux21.out2->sel1nand42.in2,
+  in[2]->sel2nand44.in1, seldemux21.out2->sel2nand44.in2,
+  in[3]->sel3nand46.in1, seldemux21.out2->sel3nand46.in2,
+  in[4]->sel4nand48.in1, seldemux21.out2->sel4nand48.in2,
+  sel1nand41.out->sel1nand51.in1, sel1nand42.out->sel1nand51.in2,
+  sel2nand43.out->sel2nand52.in1, sel2nand44.out->sel2nand52.in2,
+  sel3nand45.out->sel3nand53.in1, sel3nand46.out->sel3nand53.in2,
+  sel4nand47.out->sel4nand54.in1, sel4nand48.out->sel4nand54.in2,
+
+  dff1.out->out[1], dff2.out->out[2], dff3.out->out[3], dff4.out->out[4],
+  sel1nand51.out->dff1.in, sel2nand52.out->dff2.in,
+  sel3nand53.out->dff3.in, sel4nand54.out->dff4.in;

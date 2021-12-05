@@ -1,0 +1,17 @@
+Inputs: in1, in2;
+Outputs: out;
+// out = in1 ^ in2
+//     = ~(~(in1 ^ in2))
+//     = ~(in1 NAND in2)
+
+Parts:  // 2 NANDs
+  nand11 NAND,
+  not21 NOT;
+
+Wires:
+  in1 -> nand11.in1,
+  in2 -> nand11.in2,
+
+  nand11.out -> not21.in,
+
+  not21.out -> out;

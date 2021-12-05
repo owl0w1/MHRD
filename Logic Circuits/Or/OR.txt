@@ -1,0 +1,18 @@
+Inputs: in1, in2;
+Outputs: out;
+// out = in1 v in2
+//     = ~(~in1 ^ ~in2)
+//     = ~in1 NAND ~in2
+
+Parts:  // 3 NANDs
+  not11 NOT, not12 NOT,
+  nand21 NAND;
+
+Wires:
+  in1 -> not11.in,
+  in2 -> not12.in,
+
+  not11.out -> nand21.in1,
+  not12.out -> nand21.in2,
+
+  nand21.out -> out;

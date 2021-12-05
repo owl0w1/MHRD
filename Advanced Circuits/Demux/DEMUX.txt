@@ -1,0 +1,24 @@
+Inputs: in, sel;
+Outputs: out1, out2;
+// out1 = in ^ ~sel
+//      = (in ^ ~sel) v (in ^ ~in)
+//      = in ^ (~sel v ~in)
+//      = in ^ ~(in ^ sel)
+//      = in ^ (in NAND sel)
+// out2 = in ^ sel
+//      = ~(in NAND sel)
+
+Parts:  // 4 NANDs
+  and1nand11 NAND,
+  and1not21 NOT, and22 AND;
+
+Wires:
+  in -> and1nand11.in1,
+  sel -> and1nand11.in2,
+
+  and1nand11.out -> and1not21.in,
+  in -> and22.in1,
+  and1nand11.out -> and22.in2,
+
+  and22.out -> out1,
+  and1not21.out -> out2;

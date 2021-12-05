@@ -1,0 +1,28 @@
+Inputs: in1, in2;
+Outputs: out;
+// out = in1 XOR in2
+//     = (in1 ^ ~in2) v (~in1 ^ in2)
+//     = ~(~(in1 ^ ~in2) ^ ~(~in1 ^ in2))
+//     = ~((~in1 v in2) ^ (in1 v ~in2))
+//     = ~((~in1 v (in1 ^ in2)) ^ (~in2 v (in2 ^ in1)))
+//     = ~(~(in1 ^ ~(in1 ^ in2)) ^ ~(in2 ^ ~(in1 ^ in2)))
+//     = (in1 NAND (in1 NAND in2)) NAND (in2 NAND (in1 NAND in2))
+
+Parts:  // 4 NANDs
+  nand11 NAND,
+  nand21 NAND, nand22 NAND,
+  nand31 NAND;
+
+Wires:
+  in1 -> nand11.in1,
+  in2 -> nand11.in2,
+
+  in1 -> nand21.in1,
+  nand11.out -> nand21.in2,
+  in2 -> nand22.in1,
+  nand11.out -> nand22.in2,
+
+  nand21.out -> nand31.in1,
+  nand22.out -> nand31.in2,
+
+  nand31.out -> out;

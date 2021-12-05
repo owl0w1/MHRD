@@ -1,0 +1,39 @@
+Inputs: in1[4], in2[4], opCode[4];
+Outputs: out[4], negative, zero;
+
+Parts:  // 102 NANDs
+  op4xor XOR4B, op3xor XOR4B,
+  addernand11 NAND4B, addernand21 NAND4B, addernand22 NAND4B, addernand31 NAND4B,
+  adder1not23 NOT,
+  adder2nand41 NAND, adder2nand51 NAND, adder2nand52 NAND, adder2nand53 NAND, adder2nand61 NAND,
+  adder3nand62 NAND, adder3nand71 NAND, adder3nand72 NAND, adder3nand73 NAND, adder3nand81 NAND,
+  adder4xor82 XOR,
+  op2mux MUX4B, op1xor XOR4B, zeroor11 OR4W, zeronot21 NOT;
+
+Wires:
+  in1->op4xor.in1, opCode[4]->op4xor.in2, in2->op3xor.in1, opCode[3]->op3xor.in2,
+
+  op4xor.out->addernand11.in1, op3xor.out->addernand11.in2,
+  op4xor.out->addernand21.in1, addernand11.out->addernand21.in2,
+  op3xor.out->addernand22.in1, addernand11.out->addernand22.in2,
+  addernand21.out->addernand31.in1, addernand22.out->addernand31.in2,
+  addernand11.out[1]->adder1not23.in,
+  addernand31.out[2]->adder2nand41.in1, adder1not23.out->adder2nand41.in2,
+  addernand31.out[2]->adder2nand51.in1, adder2nand41.out->adder2nand51.in2,
+  adder1not23.out->adder2nand52.in1, adder2nand41.out->adder2nand52.in2,
+  addernand11.out[2]->adder2nand53.in1, adder2nand41.out->adder2nand53.in2,
+  adder2nand51.out->adder2nand61.in1, adder2nand52.out->adder2nand61.in2,
+  addernand31.out[3].out->adder3nand62.in1, adder2nand53->adder3nand62.in2,
+  addernand31.out[3]->adder3nand71.in1, adder3nand62.out->adder3nand71.in2,
+  adder2nand53.out->adder3nand72.in1, adder3nand62.out->adder3nand72.in2,
+  addernand11.out[3]->adder3nand73.in1, adder3nand62.out->adder3nand73.in2,
+  adder3nand71.out->adder3nand81.in1, adder3nand72.out->adder3nand81.in2,
+  addernand31.out[4]->adder4xor82.in1, adder3nand73.out->adder4xor82.in2,
+
+  addernand31.out[1]->op2mux.in1[1], adder2nand61.out->op2mux.in1[2],
+  adder3nand81.out->op2mux.in1[3], adder4xor82.out->op2mux.in1[4],
+  addernand11.out->op2mux.in2,
+  opCode[2]->op2mux.sel,
+  opCode[1]->op1xor.in1, op2mux.out->op1xor.in2, op1xor.out->out,
+  op1xor.out[4]->negative,
+  op1xor.out->zeroor11.in, zeroor11.out->zeronot21.in, zeronot21.out->zero;

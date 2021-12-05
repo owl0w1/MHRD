@@ -1,0 +1,23 @@
+Inputs: in[4], load;
+Outputs: out[4];
+
+Parts:  // 33 NANDs
+  ddf1 DFF, ddf2 DFF, ddf3 DFF, ddf4 DFF,
+  mux MUX4B;
+
+Wires:
+  dff1.out -> mux.in1[1],
+  dff2.out -> mux.in1[2],
+  dff3.out -> mux.in1[3],
+  dff4.out -> mux.in1[4],
+  in -> mux.in2,
+  load -> mux.sel,
+
+  ddf1.out -> out[1],
+  ddf2.out -> out[2],
+  ddf3.out -> out[3],
+  ddf4.out -> out[4],
+  mux.out[1] -> ddf1.in,
+  mux.out[2] -> ddf2.in,
+  mux.out[3] -> ddf3.in,
+  mux.out[4] -> ddf4.in;

@@ -1,0 +1,16 @@
+Inputs: in, load;
+Outputs: out;
+//    out = dff.out
+// dff.in = (dff.out ^ ~load) v (in ^ load)
+
+Parts:  // 9 NANDs
+  dff DFF,
+  mux MUX;
+
+Wires:
+  dff.out -> mux.in1,
+  in -> mux.in2,
+  load -> mux.sel,
+
+  dff.out -> out,
+  mux.out -> dff.in;

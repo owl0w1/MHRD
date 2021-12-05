@@ -1,0 +1,36 @@
+Inputs: carryIn, in1, in2;
+Outputs: out, carryOut;
+//   out = in1 XOR in2 XOR carryIn
+//       = ((in1 NAND (in1 NAND in2)) NAND (in2 NAND (in1 NAND in2))) XOR carryIn
+//       = ((in1 XOR in2) NAND ((in1 XOR in2) NAND carryIn))
+//          NAND (carryIn NAND ((in1 XOR in2) NAND carryIn))
+// carry = (in ^ in2) v (carryIn ^ in1) v (carryIn ^ in2)
+//       = (in1 ^ in2) v (carryIn ^ ((in1 ^ ~in2) v (in1 ^ in2)))
+//                     v (carryIn ^ ((~in1 ^ in2) v (in1 ^ in2)))
+//       = (in1 ^ in2) v (carryIn ^ (in1 ^ in2))
+//                     v (carryIn ^ ((in1 ^ ~in2) v (~in1 ^ in2)))
+//       = (in1 ^ in2) v (carryIn ^ (in1 XOR in2))
+//       = ~(~(in1 ^ in2) ^ ~(carryIn ^ (in1 XOR in2)))
+//       = (in1 NAND in2) NAND ((in1 XOR in2) NAND carryIn)
+
+Parts:  // 9 NANDs
+  xor1nand11 NAND,
+  xor1nand21 NAND, xor1nand22 NAND,
+  xor1nand31 NAND,
+  xor2nand41 NAND,
+  xor2nand51 NAND, xor2nand52 NAND, nand53 NAND,
+  xor2nand61 NAND;
+
+Wires:
+  in1->xor1nand11.in1, in2->xor1nand11.in2,
+  in1->xor1nand21.in1, xor1nand11.out->xor1nand21.in2,
+  in2->xor1nand22.in1, xor1nand11.out->xor1nand22.in2,
+  xor1nand21.out->xor1nand31.in1, xor1nand22.out->xor1nand31.in2,
+
+  carryIn->xor2nand41.in1, xor1nand31.out->xor2nand41.in2,
+  xor1nand31.out->xor2nand51.in1, xor2nand41.out->xor2nand51.in2,
+  carryIn->xor2nand52.in1, xor2nand41.out->xor2nand52.in2,
+  xor1nand11.out->nand53.in1, xor2nand41.out->nand53.in2,
+  xor2nand51.out->xor2nand61.in1, xor2nand52.out->xor2nand61.in2,
+
+  xor2nand61.out->out, nand53.out->carryOut;

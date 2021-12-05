@@ -1,0 +1,27 @@
+Inputs: in1, in2;
+Outputs: out, carry;
+//   out = in1 XOR in2
+//       = (in1 NAND (in1 NAND in2)) NAND (in2 NAND (in1 NAND in2))
+// carry = in1 ^ in2
+//       = ~(in1 NAND in2)
+
+Parts:  // 5 NANDs
+  xornand11 NAND,
+  xornand21 NAND, xornand22 NAND, andnot23 NOT,
+  xornand31 NAND;
+
+Wires:
+  in1 -> xornand11.in1,
+  in2 -> xornand11.in2,
+
+  in1 -> xornand21.in1,
+  xornand11.out -> xornand21.in2,
+  in2 -> xornand22.in1,
+  xornand11.out -> xornand22.in2,
+  xornand11.out -> andnot23.in,
+
+  xornand21.out -> xornand31.in1,
+  xornand22.out -> xornand31.in2,
+
+  xornand31.out -> out,
+  andnot23.out -> carry;

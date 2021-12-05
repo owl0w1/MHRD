@@ -1,0 +1,39 @@
+Inputs: instr[16], data[16], reset;
+Outputs: write, dataAddr[16], instrAddr[16], result[16];
+
+Parts:  // 1150 NANDs
+  decoder DECODER, mr REGISTER16B, ar REGISTER16B, pc COUNTER16B, alu ALU16B,
+  mrmux MUX16B, pcand AND, aluin1mux MUX16B, aluin2mux MUX4W16B;
+// NOT OPTIMAL
+
+Wires:
+  instr->decoder.instr,
+
+  alu.out->mrmux.in1, decoder.constant->mrmux.in2[1:15], decoder.cToM->mrmux.sel,
+  mrmux.out->mr.in, decoder.loadM->mr.load,
+
+  alu.out->ar.in, decoder.loadA->ar.load,
+
+  mr.out->pc.in,
+  decoder.jmpIfZ->pcand.in1, alu.zero->pcand.in2, pcand.out->pc.load,
+  reset->pc.reset,
+
+  ar.out->aluin1mux.in1,
+  decoder.constant[1:5]->aluin1mux.in2[1:5],
+  decoder.constant[5]->aluin1mux.in2[6:16],
+  decoder.op1->aluin1mux.sel,
+  aluin1mux.out->alu.in1,
+
+  decoder.constant[1:5]->aluin2mux.in1[1:5],
+  decoder.constant[5]->aluin2mux.in1[6:16],
+  ar.out->aluin2mux.in2,
+  mr.out->aluin2mux.in3,
+  data->aluin2mux.in4,
+  decoder.op2->aluin2mux.sel,
+  aluin2mux.out->alu.in2,
+  decoder.opCode->alu.opCode,
+
+  decoder.loadD->write,
+  mr.out->dataAddr,
+  pc.out->instrAddr,
+  alu.out->result;

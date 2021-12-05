@@ -1,0 +1,30 @@
+Inputs: in[16], load, address[2];
+Outputs: out[16];
+
+Parts:  // 696 NANDs
+  reg1 REGISTER16B, reg2 REGISTER16B, reg3 REGISTER16B, reg4 REGISTER16B,
+  mux MUX4W16B,
+  demux DEMUX4W;
+// NOT OPTIMAL
+//   MUX16B can be improved from 52 NANDs to 49 NANDs
+//   REGISTER16B can be improved from 132 NANDs to 129 NANDs
+
+Wires:
+  reg1.out -> mux.in1,
+  reg2.out -> mux.in2,
+  reg3.out -> mux.in3,
+  reg4.out -> mux.in4,
+  address -> mux.sel,
+
+  load -> demux.in,
+  address -> demux.sel,
+
+  mux.out -> out,
+  in -> reg1.in,
+  demux.out1 -> reg1.load,
+  in -> reg2.in,
+  demux.out2 -> reg2.load,
+  in -> reg3.in,
+  demux.out3 -> reg3.load,
+  in -> reg4.in,
+  demux.out4 -> reg4.load;

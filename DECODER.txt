@@ -1,0 +1,39 @@
+Inputs: instr[16];
+Outputs: cToM, loadA, loadD, loadM, op1, op2[2], opCode[4], jmpIfZ, constant[15];
+//     ctoM = instr[16]
+//    loadA = ~instr[16] ^ ~instr[15] ^ instr[14]
+//          = (~instr[16] ^ instr[14]) ^ ~instr[15]
+//    loadD = ~instr[16] ^ instr[15] ^ instr[14]
+//          = (~instr[16] ^ instr[14]) ^ instr[15]
+//    loadM = instr[16] v (instr[15] ^ ~instr[14])
+//          = ~instr[16] NAND (instr[15] NAND ~instr[14])
+//      op1 = instr[13]
+//      op2 = instr[11:12]
+//   opCode = instr[7:10]
+//   jmpIfZ = ~instr[16] ^ instr[6]
+// constant = instr[1:15]
+
+Parts:  // 12 NANDs
+  not11 NOT, not12 NOT,
+  and21 AND, nand22 NAND, and23 AND,
+  nand31 NAND,
+  demux41 DEMUX;
+// NOT OPTIMAL? Is 11 NANDs solution legit?
+
+Wires:
+  instr[16]->not11.in, instr[14]->not12.in,
+  instr[14]->and21.in1, not11.out->and21.in2,
+  instr[15]->nand22.in1, not12.out->nand22.in2,
+  instr[6]->and23.in1, not11.out->and23.in2,
+  not11.out->nand31.in1, nand22.out->nand31.in2,
+  and21.out->demux41.in, instr[15]->demux41.sel,
+
+  instr[16]->cToM,
+  demux41.out1->loadA,
+  demux41.out2->loadD,
+  nand31.out->loadM,
+  instr[13]->op1,
+  instr[11:12]->op2,
+  instr[7:10]->opCode,
+  and23.out->jmpIfZ,
+  instr[1:15]->constant;
